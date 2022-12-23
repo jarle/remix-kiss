@@ -1,4 +1,5 @@
 {
+  "name": "remix-kiss",
   "private": true,
   "sideEffects": false,
   "scripts": {

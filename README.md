@@ -1,53 +1,37 @@
-# Welcome to Remix!
+# remix-kiss - unopinionated remix supabase starter
 
-- [Remix Docs](https://remix.run/docs)
+    Remix K.I.S.S - Keep It Simple Supabase
 
-## Development
+Warning: this is pretty experimental still, use at your own risk.
 
-From your terminal:
+A minimalist remix starter to quickly build OAuth2-enabled apps using:
 
-```sh
-npm run dev
-```
+- Remix.run
+- Supabase
+- Prisma
 
-This starts your app in development mode, rebuilding assets on file changes.
+## Setup
 
-## Deployment
+TODO: better descriptions here
 
-First, build your app for production:
+### Set up project for development
 
-```sh
-npm run build
-```
+1. Create or use a [Supabase instance](https://app.supabase.com/projects) and fill in `.env` with values based on the example [.env-file](./.env.example).
+1. `npm install`
+1. `npx prisma db seed`
+1. `npx prisma db push`
+1. `npm run dev`
 
-Then run the app in production mode:
+Add new provider (GitHub as example)
 
-```sh
-npm start
-```
+1. Create new Githb OAuth App [here](https://github.com/settings/developers)
+1. Enable GitHub as provider in Supabase dashboard, using the credentials shown in the GitHub app
 
-Now you'll need to pick a host to deploy it to.
+## Supabase and Prisma
 
-### DIY
+See [schema.prisma](./prisma/schema.prisma) for Schema. The `User` table is connected to the Supabase `auth.users`.
 
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
+This is mostly done with the [seed-script](./prisma/seed.ts), which declares triggers and foreign keys outside of the Prisma schema.
 
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
-
-### Using a Template
-
-When you ran `npx create-remix@latest` there were a few choices for hosting. You can run that again to create a new project, then copy over your `app/` folder to the new project that's pre-configured for your target server.
-
-```sh
-cd ..
-# create a new project, and pick a pre-configured host
-npx create-remix@latest
-cd my-new-remix-app
-# remove the new project's app (not the old one!)
-rm -rf app
-# copy your app over
-cp -R ../my-old-remix-app/app app
-```
+Whenever a new user is authenticated through OAuth, a public user is created in the `User` table through postgres triggers.
+When a user is deleted in the public `User` table, the corresponding authentication is deleted from the `auth.users` table.
