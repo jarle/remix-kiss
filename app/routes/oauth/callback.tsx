@@ -1,8 +1,8 @@
 import type { ActionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
-import { authenticator } from '~/auth.server';
-import { supabaseClient } from '~/supabase.client';
+import { authenticator } from '~/auth/auth.server';
+import { supabaseClient } from '~/auth/supabase.client';
 
 export const action = async ({ request }: ActionArgs) => {
   await authenticator.authenticate('sb-oauth', request, {

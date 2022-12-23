@@ -1,8 +1,8 @@
 import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { authenticator, oAuthStrategy, sessionStorage } from '~/auth.server';
-import { signInWithGithub } from '~/supabase.client';
+import { authenticator, oAuthStrategy, sessionStorage } from '~/auth/auth.server';
+import { signInWithGithub } from '~/auth/supabase.client';
 
 export const loader = async ({ request }: LoaderArgs) => {
   await oAuthStrategy.checkSession(request, {

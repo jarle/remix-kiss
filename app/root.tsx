@@ -1,5 +1,5 @@
 import type { LoaderFunction } from '@remix-run/node';
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from '@remix-run/react';
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch, useLoaderData } from '@remix-run/react';
 
 export const loader: LoaderFunction = () => {
   return {
@@ -31,6 +31,28 @@ export default function App() {
         />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
+      </body>
+    </html>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  return (
+    <html>
+      <head>
+        <title>Oops!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <h1>
+          {caught.status} {caught.statusText}
+        </h1>
+        <p>
+          {caught.data}
+        </p>
+        <Scripts />
       </body>
     </html>
   );

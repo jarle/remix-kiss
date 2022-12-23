@@ -1,7 +1,9 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { Form, useLoaderData } from '@remix-run/react';
-import { authenticator, oAuthStrategy } from '~/auth.server';
+import invariant from 'tiny-invariant';
+import { authenticator, oAuthStrategy } from '~/auth/auth.server';
+import { db } from '~/db.server';
 
 export const action = async ({ request }: ActionArgs) => {
   await authenticator.logout(request, { redirectTo: '/login' });
@@ -12,14 +14,32 @@ export const loader = async ({ request }: LoaderArgs) => {
     failureRedirect: '/login'
   });
 
-  return json(session?.user);
+  invariant(session.user, "User should be set for oAuth-session")
+
+  const user = await db.user.findUnique({
+    where: {
+      id: session.user.id
+    }
+  })
+
+  if (!user) {
+    throw new Response(
+      `Authenticated user returned from session (${session.user.id}) did not match any users in the public.User table. Make sure that the trigger functions for the database are registered with the seed script.`,
+      {
+        status: 500,
+        statusText: "Database error"
+      })
+  }
+
+  return json({ user });
 };
 
 export default function Screen() {
-  const data = useLoaderData<typeof loader>();
+  const { user } = useLoaderData<typeof loader>();
+
   return (
     <>
-      <h1>Hello {data?.email ?? 'anon'}</h1>
+      <h1>Hello {user.email}</h1>
 
       <Form method="post">
         <button>Log Out</button>
